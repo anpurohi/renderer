@@ -24,6 +24,9 @@
     <ClInclude Include="inc\GraphicsClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\Dx11Class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SystemClass.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\HelloWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dx11Class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
