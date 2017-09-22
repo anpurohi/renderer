@@ -37,8 +37,8 @@ private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
 
-	//InputClass* m_input;
-	//GraphicsClass* m_graphics;
+	InputClass* m_input;
+	GraphicsClass* m_graphics;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

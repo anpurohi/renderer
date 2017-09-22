@@ -17,31 +17,31 @@ HRESULT SystemClass::Initialize()
 	// Initialize the windows api
 	InitializeWindows(screenWidth, screenHeight);
 
-	//// Create the input object. 
-	//// This object will be used to handle reading the keyboard input from the user.
-	//m_input = new InputClass;
-	//if (!m_input)
-	//{
-	//	return E_FAIL;
-	//}
+	// Create the input object. 
+	// This object will be used to handle reading the keyboard input from the user.
+	m_input = new InputClass;
+	if (!m_input)
+	{
+		return E_FAIL;
+	}
 
-	//// Initialize the input object
-	//m_input->Initialize();
+	// Initialize the input object
+	m_input->Initialize();
 
-	//// Create the graphic object.
-	//// This object will handle rendering all the graphics for this application.
-	//m_graphics = new GraphicsClass;
-	//if (!m_graphics)
-	//{
-	//	return E_FAIL;
-	//}
+	// Create the graphic object.
+	// This object will handle rendering all the graphics for this application.
+	m_graphics = new GraphicsClass;
+	if (!m_graphics)
+	{
+		return E_FAIL;
+	}
 
-	//// Initialize the graphics object
-	//hr = m_graphics->Initialize();
-	//if (FAILED(hr))
-	//{
-	//	return hr;
-	//}
+	// Initialize the graphics object
+	hr = m_graphics->Initialize(screenWidth, screenHeight, m_hWnd);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 
 	return S_OK;
 }
@@ -87,21 +87,20 @@ void SystemClass::Run()
 
 void SystemClass::Shutdown()
 {
-	//// Release the graphics object
-	//if (m_graphics)
-	//{
-	//	m_graphics->Shutdown();
-	//	delete m_graphics;
-	//	m_graphics = nullptr;
-	//}
+	// Release the graphics object
+	if (m_graphics)
+	{
+		m_graphics->Shutdown();
+		delete m_graphics;
+		m_graphics = nullptr;
+	}
 
-	//// Release the input object
-	//if (m_input)
-	//{
-	//	m_input->Shutdown();
-	//	delete m_input;
-	//	m_input = nullptr;
-	//}
+	// Release the input object
+	if (m_input)
+	{
+		delete m_input;
+		m_input = nullptr;
+	}
 
 	// Shutdown the window
 	ShutdownWindows();
@@ -120,17 +119,17 @@ HRESULT SystemClass::Frame()
 	HRESULT hr;
 
 	//// Check if the user pressed escape and wants to exit the application
-	//if (m_input->isKeyDown(VK_ESCAPE))
-	//{
-	//	return E_FAIL;
-	//}
+	if (m_input->isKeyDown(VK_ESCAPE))
+	{
+		return E_FAIL;
+	}
 
-	//// Do the frame processing for the graphics object
-	//hr = m_graphics->Frame();
-	//if (FAILED(hr))
-	//{
-	//	return hr;
-	//}
+	// Do the frame processing for the graphics object
+	hr = m_graphics->Frame();
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 
 	return S_OK;
 }
@@ -173,23 +172,23 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// Setup the screen settings depending on 
 	// whether it is running in full screen or in windowed mode
-	//if (FULL_SCREEN)
-	//{
-	//	// If full screen, set the screen to max size of the users desktop and 32bit
-	//	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-	//	dmScreenSettings.dmSize			= sizeof(dmScreenSettings);
-	//	dmScreenSettings.dmPelsWidth	= static_cast<unsigned long>(screenWidth);
-	//	dmScreenSettings.dmPelsHeight	= static_cast<unsigned long>(screenHeight);
-	//	dmScreenSettings.dmBitsPerPel	= 32;
-	//	dmScreenSettings.dmFields		= DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	if (FULL_SCREEN)
+	{
+		// If full screen, set the screen to max size of the users desktop and 32bit
+		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+		dmScreenSettings.dmSize			= sizeof(dmScreenSettings);
+		dmScreenSettings.dmPelsWidth	= static_cast<unsigned long>(screenWidth);
+		dmScreenSettings.dmPelsHeight	= static_cast<unsigned long>(screenHeight);
+		dmScreenSettings.dmBitsPerPel	= 32;
+		dmScreenSettings.dmFields		= DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-	//	// Change the display settings to full screen
-	//	ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+		// Change the display settings to full screen
+		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
-	//	// Set the position of the window to the top-left corner
-	//	posX = posY = 0;
-	//}
-	//else
+		// Set the position of the window to the top-left corner
+		posX = posY = 0;
+	}
+	else
 	{
 		// If windowed, set it to 800x600 resolution
 		screenWidth		= 800;
@@ -249,14 +248,14 @@ LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM 
 	case WM_KEYDOWN:
 		// If a key has been pressed, 
 		// send it to the input object so that its state can be recorded
-		//m_input->keyDown(static_cast<UINT>(wparam));
+		m_input->keyDown(static_cast<UINT>(wparam));
 		return 0;
 
 		// Check if a key has been released on the keyboard
 	case WM_KEYUP:
 		// If a key has been released,
 		// send it to the input object so that its state can be unset
-		//m_input->keyUp(static_cast<UINT>(wparam));
+		m_input->keyUp(static_cast<UINT>(wparam));
 		return 0;
 
 		// Any other messages are to be sent to the default message handler
