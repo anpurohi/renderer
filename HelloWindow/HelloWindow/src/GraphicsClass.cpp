@@ -23,7 +23,7 @@ HRESULT GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the newly create Dx 11 manager
-	HRESULT hr = m_dx11->Initialize(screenWidth, screenHeight, hwnd);
+	HRESULT hr = m_dx11->Initialize(screenWidth, screenHeight, VSYNC, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if (FAILED(hr))
 	{
         MessageBox(hwnd, "Could not initialize Dx 11 manager", "Error", MB_OK);
@@ -53,7 +53,7 @@ HRESULT GraphicsClass::Frame()
 HRESULT GraphicsClass::Render()
 {
 	// Clear the buffers to begin the frame
-	m_dx11->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+	m_dx11->BeginScene(0.5f, 0.9f, 0.9f, 1.0f);
 
 	// Present the rendered scene to the screen
 	m_dx11->EndScene();

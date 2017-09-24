@@ -2,6 +2,10 @@
 #ifndef _DX11CLASS_H_
 #define _DX11CLASS_H_
 
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+
 #include <d3d11.h>
 #include <DirectXMath.h>
 using namespace DirectX;
