@@ -113,11 +113,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="inc\Dx11Class.h" />
     <ClInclude Include="inc\GraphicsClass.h" />
     <ClInclude Include="inc\InputClass.h" />
     <ClInclude Include="inc\SystemClass.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Dx11Class.cpp" />
     <ClCompile Include="src\GraphicsClass.cpp" />
     <ClCompile Include="src\HelloWindow.cpp" />
     <ClCompile Include="src\InputClass.cpp" />
