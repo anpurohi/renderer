@@ -11,7 +11,7 @@
 #include <windows.h>
 #include "Dx11Class.h"
 
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 const bool VSYNC = false;
 const float SCREEN_DEPTH = 1000.f;
 const float SCREEN_NEAR = 0.1f;

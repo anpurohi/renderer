@@ -250,15 +250,15 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
     ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 
     rasterDesc.AntialiasedLineEnable = false;
-    rasterDesc.CullMode = D3D11_CULL_BACK;
-    rasterDesc.DepthBias = 0;
-    rasterDesc.DepthBiasClamp = 0.f;
-    rasterDesc.DepthClipEnable = true;
-    rasterDesc.FillMode = D3D11_FILL_SOLID;
+    rasterDesc.CullMode              = D3D11_CULL_BACK;
+    rasterDesc.DepthBias             = 0;
+    rasterDesc.DepthBiasClamp        = 0.f;
+    rasterDesc.DepthClipEnable       = true;
+    rasterDesc.FillMode              = D3D11_FILL_SOLID;
     rasterDesc.FrontCounterClockwise = false;
-    rasterDesc.MultisampleEnable = false;
-    rasterDesc.ScissorEnable = false;
-    rasterDesc.SlopeScaledDepthBias = 0.f;
+    rasterDesc.MultisampleEnable     = false;
+    rasterDesc.ScissorEnable         = false;
+    rasterDesc.SlopeScaledDepthBias  = 0.f;
 
     // Create the rasterizer state from the description we just filled out
     hr = m_pDevice->CreateRasterizerState(&rasterDesc, &m_pRasterizerState);
