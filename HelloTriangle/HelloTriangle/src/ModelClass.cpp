@@ -8,6 +8,10 @@ ModelClass::ModelClass()
     SetRotation(0.0f, 0.0f, 0.0f);
     SetScaling(1.0f, 1.0f, 1.0f);
     SetTranslation(0.0f, 0.0f, 0.0f);
+
+#if USE_TEXTURE
+    m_pTexture = nullptr;
+#endif
 }
 
 ModelClass::ModelClass(const ModelClass&)
@@ -18,6 +22,22 @@ ModelClass::~ModelClass()
 {
 }
 
+#if USE_TEXTURE
+HRESULT ModelClass::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, char* pTextureFilename)
+{
+    HRESULT hr;
+
+    // Initialize the vertex and index buffers
+    hr = InitializeBuffer(pDevice);
+    CHECK_HR(hr);
+
+    // Load the texture for this model
+    hr = LoadTexture(pDevice, pDeviceContext, pTextureFilename);
+    CHECK_HR(hr);
+
+    return S_OK;
+}
+#else
 HRESULT ModelClass::Initialize(ID3D11Device* pDevice)
 {
     HRESULT hr;
@@ -28,9 +48,14 @@ HRESULT ModelClass::Initialize(ID3D11Device* pDevice)
 
     return S_OK;
 }
-
+#endif
 void ModelClass::Shutdown()
 {
+#if USE_TEXTURE
+    // Release the model texture
+    ReleaseTexture();
+#endif
+
     // Shutdown the vertex and index buffers
     ShutdownBuffers();
 }
@@ -45,6 +70,13 @@ UINT ModelClass::GetIndexCount()
 {
     return m_indexCount;
 }
+
+#if USE_TEXTURE
+ID3D11ShaderResourceView* ModelClass::GetTexture()
+{
+    return m_pTexture->GetTexture();
+}
+#endif
 
 HRESULT ModelClass::InitializeBuffer(ID3D11Device* pDevice)
 {
@@ -71,12 +103,19 @@ HRESULT ModelClass::InitializeBuffer(ID3D11Device* pDevice)
     }
 
     // Load the vertex array with data
-    pVertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.f);    // Bottom-left
-    pVertices[0].color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-    pVertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.f);      // Top-middle
-    pVertices[1].color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-    pVertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.f);     // Bottom-right
-    pVertices[2].color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+    pVertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.f);        // Bottom-left
+    pVertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.f);          // Top-middle
+    pVertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.f);         // Bottom-right
+    
+#if USE_TEXTURE
+    pVertices[0].texture  = XMFLOAT2(0.000f, 0.876f);           // Bottom-left
+    pVertices[1].texture  = XMFLOAT2(0.207f, 0.001f);           // Top-middle
+    pVertices[2].texture  = XMFLOAT2(0.799f, 0.876f);           // Bottom-right
+#else
+    pVertices[0].color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);   // Bottom-left
+    pVertices[1].color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);   // Top-middle
+    pVertices[2].color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);   // Bottom-right
+#endif
 
     // Load the index array with data
     pIndices[0] = 0; // Bottom-left
@@ -206,3 +245,34 @@ void ModelClass::GetTransformationMatrix(XMMATRIX& pModelMatrix)
     // matrix is being transposed before being sent to the shader (in ColorShaderClass::SetShaderParameters)
     pModelMatrix = m_scalingMatrix * m_rotationMatrix * m_translationMatrix;
 }
+
+#if USE_TEXTURE
+HRESULT ModelClass::LoadTexture(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, char* pFilename)
+{
+    HRESULT hr;
+
+    // Create the new texture object
+    m_pTexture = new TextureClass;
+    if (!m_pTexture)
+    {
+        return E_OUTOFMEMORY;
+    }
+
+    // Initialize the texture object
+    hr = m_pTexture->Initialize(pDevice, pDeviceContext, pFilename);
+    CHECK_HR(hr);
+
+    return S_OK;
+}
+
+void ModelClass::ReleaseTexture()
+{
+    // Release the texture object
+    if (m_pTexture)
+    {
+        m_pTexture->Shutdown();
+        delete m_pTexture;
+        m_pTexture = nullptr;
+    }
+}
+#endif

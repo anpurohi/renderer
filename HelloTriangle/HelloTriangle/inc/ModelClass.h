@@ -8,10 +8,19 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
+#if USE_TEXTURE
+#include "TextureClass.h"
+#endif
+
 struct VertexType
 {
     XMFLOAT3 position;
+
+#if USE_TEXTURE
+    XMFLOAT2 texture;
+#else
     XMFLOAT4 color;
+#endif
 };
 
 class ModelClass
@@ -21,7 +30,11 @@ public:
     ModelClass(const ModelClass&);
     ~ModelClass();
 
+#if USE_TEXTURE
+    HRESULT Initialize(ID3D11Device*, ID3D11DeviceContext*, char*);
+#else
     HRESULT Initialize(ID3D11Device*);
+#endif
     void Shutdown();
     void Render(ID3D11DeviceContext*);
     
@@ -40,14 +53,19 @@ public:
     void Scale(float, float, float);
     void Translate(float, float, float);
 
+#if USE_TEXTURE
+    ID3D11ShaderResourceView* GetTexture();
+#endif
+
 private:
     HRESULT InitializeBuffer(ID3D11Device*);
     void ShutdownBuffers();
     void RenderBuffers(ID3D11DeviceContext*);
 
-//    void UpdateRotationMatrix();
-//    void UpdateScaleMatrix();
-//    void UpdateTranslationMatrix();
+#if USE_TEXTURE
+    HRESULT LoadTexture(ID3D11Device*, ID3D11DeviceContext*, char*);
+    void ReleaseTexture();
+#endif
 
 private:
     ID3D11Buffer* m_pVertexBuffer;
@@ -56,13 +74,13 @@ private:
     UINT m_vertexCount;
     UINT m_indexCount;
 
-//    XMFLOAT3 m_rotation;
-//    XMFLOAT3 m_scaling;
-//    XMFLOAT3 m_translation;
-
     XMMATRIX m_rotationMatrix;
     XMMATRIX m_scalingMatrix;
     XMMATRIX m_translationMatrix;
+
+#if USE_TEXTURE
+    TextureClass* m_pTexture;
+#endif
 };
 
 #endif

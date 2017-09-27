@@ -42,6 +42,12 @@
     <ClInclude Include="inc\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\TexShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\TextureClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Dx11Class.cpp">
@@ -68,12 +74,24 @@
     <ClCompile Include="src\ModelClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\TexShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="shaders\vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\texPs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\texVs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
