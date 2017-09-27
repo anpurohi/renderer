@@ -1,12 +1,6 @@
 #include "..\inc\Dx11Class.h"
 #include <minwinbase.h>
 
-#define SAFE_RELEASE(p)     if (p) \
-                            {      \
-                                p->Release(); \
-                                p = nullptr;    \
-                            }
-
 Dx11Class::Dx11Class()
 {
     m_pSwapChain          = nullptr;
@@ -37,36 +31,24 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
     // Create a DirectX graphics interface factory
     IDXGIFactory* pFactory;
     hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create DXGI Factory");
 
     // Use the factory to create an adapter for the primary 
     // graphics interface (video card)
     IDXGIAdapter* pAdapter;
     hr = pFactory->EnumAdapters(0, &pAdapter);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to enumerate adapters (video cards)");
 
     // Enumerate the primary adapter output (monitor)
     IDXGIOutput* pAdapterOutput;
     hr = pAdapter->EnumOutputs(0, &pAdapterOutput);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to enumerate outputs (monitors)");
 
     // Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM 
     // display format for the adapter output (monitor)
     UINT numModes;
     hr = pAdapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to locate monitor that supports DXGI_FORMAT_R8G8B8A8_UNORM");
 
     // Create a list to hold all the possible display modes
     // for this monitor / video card combination
@@ -79,10 +61,7 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
     // Fill the display mode list structures
     hr = pAdapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes,
                                             pDisplayModeList);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to fetch the display mode list");
 
     UINT numerator, denominator;
     // Now go through all the display modes and find the one that matches the screen width and height.
@@ -101,10 +80,7 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
     // Get the adapter (video card) description 
     DXGI_ADAPTER_DESC adapterDesc;
     hr = pAdapter->GetDesc(&adapterDesc);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to fetch adapter description");
 
     // Store the dedicated video card memory in megabytes
     m_videoCardMemory = (UINT)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
@@ -149,28 +125,27 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
 
     D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
+    UINT flags;
+
+#ifdef _DEBUG
+    flags = D3D11_CREATE_DEVICE_DEBUG;
+#else
+    flags = 0;
+#endif
+
     // Create the swap chain, Direct3D device and the Direct3D device context
-    hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, &featureLevel, 1,
+    hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags, &featureLevel, 1,
             D3D11_SDK_VERSION, &swapChainDesc, &m_pSwapChain, &m_pDevice, nullptr, &m_pDeviceContext);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create the swap chain, device or device context");
 
     // Get a pointer to the back buffer
     ID3D11Texture2D* pBackBuffer;
     hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to fetch the back buffer");
 
     // Create the render target view with the back buffer pointer
     hr = m_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_pRTV);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create a Render Target View");
 
     pBackBuffer->Release();
     pBackBuffer = nullptr;
@@ -194,10 +169,7 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
 
     // Create the texture for the depth buffer using the filled out descriptor
     hr = m_pDevice->CreateTexture2D(&depthBufferDesc, nullptr, &m_pDepthStencilBuffer);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create a 2D texture");
 
     // Specify the descriptor for the depth stencil state
     D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -220,10 +192,7 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
 
     // Create the depth stencil state
     hr = m_pDevice->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create a depth stencil state");
 
     m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 
@@ -237,10 +206,7 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
 
     // Create the depth stencil view
     hr = m_pDevice->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDSV);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create a depth stencil view");
 
     // Bind the render target view and the depth stencil view to the output render pipeline
     m_pDeviceContext->OMSetRenderTargets(1, &m_pRTV, m_pDSV);
@@ -262,25 +228,34 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
 
     // Create the rasterizer state from the description we just filled out
     hr = m_pDevice->CreateRasterizerState(&rasterDesc, &m_pRasterizerState);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    CHECK_HR_MSG(hr, hwnd, "Unable to create a rasterizer state");
 
     // Set the rasterizer state
     m_pDeviceContext->RSSetState(m_pRasterizerState);
+
+    // Setup the viewport for rendering
+    D3D11_VIEWPORT viewport;
+    viewport.Width    = (float)screenWidth;
+    viewport.Height   = (float)screenHeight;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+    viewport.TopLeftX = 0.0f;
+    viewport.TopLeftY = 0.0f;
+
+    // Create the viewport
+    m_pDeviceContext->RSSetViewports(1, &viewport);
 
     float fieldOfView = 3.141592654f / 4.f;
     float screenAspect = (float)screenWidth / (float)screenHeight;
 
     // Create the projection matric for 3D rendering
-    m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
+    m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
 
     // Initialize the world matrix as the identity matrix
-    m_pWorldMatrix = DirectX::XMMatrixIdentity();
+    m_pWorldMatrix = XMMatrixIdentity();
 
     // Create an orthographic matrix for 2D rendering
-    m_pOrthographicMatrix = DirectX::XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+    m_pOrthographicMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
 
     return S_OK;
 }

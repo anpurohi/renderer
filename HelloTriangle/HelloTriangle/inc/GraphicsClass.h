@@ -10,8 +10,11 @@
 
 #include <windows.h>
 #include "Dx11Class.h"
+#include "CameraClass.h"
+#include "ModelClass.h"
+#include "ColorShaderClass.h"
 
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 const bool VSYNC = false;
 const float SCREEN_DEPTH = 1000.f;
 const float SCREEN_NEAR = 0.1f;
@@ -31,6 +34,11 @@ public:
 	HRESULT Frame();
 
 private:
-	Dx11Class *m_dx11;
+	Dx11Class *       m_pDx11;
+    CameraClass*      m_pCamera;
+    ModelClass*       m_pModel;
+    ColorShaderClass* m_pColorShader;
+
+    unsigned long     m_frameNum;
 };
 #endif
