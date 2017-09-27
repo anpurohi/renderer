@@ -6,6 +6,7 @@ GraphicsClass::GraphicsClass()
     m_pCamera      = nullptr;
     m_pModel       = nullptr;
     m_pColorShader = nullptr;
+    m_frameNum     = 0;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -53,6 +54,11 @@ HRESULT GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     // Initialize the model object
     hr = m_pModel->Initialize(m_pDx11->GetDevice());
     CHECK_HR_MSG(hr, hwnd, "Unable to initialize the model");
+
+    // Set the initial transformations for the model
+    m_pModel->SetScaling(0.5f, 0.5f, 1.0f);
+    m_pModel->SetRotation(0.0f, 0.0f, 0.0f);
+    m_pModel->SetTranslation(0.0f, 0.0f, 0.0f);
 
     // Create the color shader object
     m_pColorShader = new ColorShaderClass;
@@ -115,6 +121,7 @@ HRESULT GraphicsClass::Render()
     XMMATRIX worldMatrix;
     XMMATRIX viewMatrix;
     XMMATRIX projectionMatrix;
+    XMMATRIX modelTransformationMatrix;
 
 	// Clear the buffers to begin the frame
 	m_pDx11->BeginScene(0.5f, 0.9f, 0.9f, 1.0f);
@@ -127,15 +134,24 @@ HRESULT GraphicsClass::Render()
     m_pCamera->GetViewMatrix(viewMatrix);
     m_pDx11  ->GetProjectionMatrix(projectionMatrix);
 
+    // Rotate the model for this frame
+    m_pModel->Rotate(0.0f, 0.0f, XMConvertToRadians(10.0f / 360.0f));
+
+    // Get the transformation matrix for this model
+    m_pModel->GetTransformationMatrix(modelTransformationMatrix);
+
     // Put the model vertex and the index buffers on the graphics pipeline to prepare them for drawing
     m_pModel->Render(m_pDx11->GetDeviceContext());
 
     // Render the model using the color shader
-    hr = m_pColorShader->Render(m_pDx11->GetDeviceContext(), m_pModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+    hr = m_pColorShader->Render(m_pDx11->GetDeviceContext(), m_pModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, modelTransformationMatrix);
     CHECK_HR(hr);
 
 	// Present the rendered scene to the screen
 	m_pDx11->EndScene();
+
+    // Increment the frame number
+    m_frameNum++;
 
 	return S_OK;
 }

@@ -235,8 +235,8 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
 
     // Setup the viewport for rendering
     D3D11_VIEWPORT viewport;
-    viewport.Width = (float)screenWidth;
-    viewport.Height = (float)screenHeight;
+    viewport.Width    = (float)screenWidth;
+    viewport.Height   = (float)screenHeight;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0.0f;
@@ -249,13 +249,13 @@ HRESULT Dx11Class::Initialize(int screenWidth, int screenHeight, bool vsync, HWN
     float screenAspect = (float)screenWidth / (float)screenHeight;
 
     // Create the projection matric for 3D rendering
-    m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
+    m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
 
     // Initialize the world matrix as the identity matrix
-    m_pWorldMatrix = DirectX::XMMatrixIdentity();
+    m_pWorldMatrix = XMMatrixIdentity();
 
     // Create an orthographic matrix for 2D rendering
-    m_pOrthographicMatrix = DirectX::XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+    m_pOrthographicMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
 
     return S_OK;
 }

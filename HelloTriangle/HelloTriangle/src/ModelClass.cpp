@@ -2,8 +2,12 @@
 
 ModelClass::ModelClass()
 {
-    m_pVertexBuffer = nullptr;
-    m_pIndexBuffer = nullptr;
+    m_pVertexBuffer      = nullptr;
+    m_pIndexBuffer       = nullptr;
+
+    SetRotation(0.0f, 0.0f, 0.0f);
+    SetScaling(1.0f, 1.0f, 1.0f);
+    SetTranslation(0.0f, 0.0f, 0.0f);
 }
 
 ModelClass::ModelClass(const ModelClass&)
@@ -149,4 +153,56 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* pDeviceContext)
 
     // Set the type of primitive that should be rendered from this vertex buffer. In this case: triangles
     pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void ModelClass::GetRotationMatrix(XMMATRIX& pRotationMatrix)
+{
+    pRotationMatrix = m_rotationMatrix;
+}
+
+void ModelClass::GetScaleMatrix(XMMATRIX& pScalingMatrix)
+{
+    pScalingMatrix = m_scalingMatrix;
+}
+
+void ModelClass::GetTranslationMatrix(XMMATRIX& pTranslationMatrix)
+{
+    pTranslationMatrix = m_translationMatrix;
+}
+
+void ModelClass::SetRotation(float pitch, float yaw, float roll)
+{
+    m_rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+}
+
+void ModelClass::SetScaling(float sx, float sy, float sz)
+{
+    m_scalingMatrix = XMMatrixScaling(sx, sy, sz);
+}
+
+void ModelClass::SetTranslation(float x, float y, float z)
+{
+    m_translationMatrix = XMMatrixTranslation(x, y, z);
+}
+
+void ModelClass::Rotate(float deltaPitch, float deltaYaw, float deltaRoll)
+{
+    m_rotationMatrix = m_rotationMatrix * XMMatrixRotationRollPitchYaw(deltaPitch, deltaYaw, deltaRoll);
+}
+
+void ModelClass::Scale(float deltaX, float deltaY, float deltaZ)
+{
+    m_scalingMatrix = m_scalingMatrix * XMMatrixScaling(deltaX, deltaY, deltaZ);
+}
+
+void ModelClass::Translate(float deltaX, float deltaY, float deltaZ)
+{
+    m_translationMatrix = m_translationMatrix * XMMatrixTranslation(deltaX, deltaY, deltaZ);
+}
+
+void ModelClass::GetTransformationMatrix(XMMATRIX& pModelMatrix)
+{
+    // Multiplications are carried out as S * R * T, because the transformation 
+    // matrix is being transposed before being sent to the shader (in ColorShaderClass::SetShaderParameters)
+    pModelMatrix = m_scalingMatrix * m_rotationMatrix * m_translationMatrix;
 }

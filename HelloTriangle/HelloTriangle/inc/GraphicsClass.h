@@ -38,5 +38,7 @@ private:
     CameraClass*      m_pCamera;
     ModelClass*       m_pModel;
     ColorShaderClass* m_pColorShader;
+
+    unsigned long     m_frameNum;
 };
 #endif

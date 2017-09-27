@@ -3,6 +3,7 @@ cbuffer MatrixBuffer
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
+	matrix modelTransformationMatrix;
 };
 
 struct VertexInputType
@@ -25,7 +26,8 @@ PixelInputType vs_main( VertexInputType input )
 	input.position.w = 1.0f;
 
 	// Calculate the position of the vertex shader against the world, view and projection matrices
-	output.position = mul(input.position, worldMatrix);
+	output.position = mul(input.position, modelTransformationMatrix);
+	output.position = mul(output.position, worldMatrix);
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 

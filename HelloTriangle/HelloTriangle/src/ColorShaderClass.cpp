@@ -33,12 +33,12 @@ void ColorShaderClass::Shutdown()
     ShutdownShader();
 }
 
-HRESULT ColorShaderClass::Render(ID3D11DeviceContext* pDeviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+HRESULT ColorShaderClass::Render(ID3D11DeviceContext* pDeviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, XMMATRIX modelTransformationMatrix)
 {
     HRESULT hr;
 
     // Set the shader parameters that it will use for rendering
-    hr = SetShaderParameters(pDeviceContext, worldMatrix, viewMatrix, projectionMatrix);
+    hr = SetShaderParameters(pDeviceContext, worldMatrix, viewMatrix, projectionMatrix, modelTransformationMatrix);
     CHECK_HR(hr);
 
     // Now render the prepared buffers with the shader
@@ -126,14 +126,15 @@ void ColorShaderClass::ShutdownShader()
     SAFE_RELEASE(m_pVS);
 }
 
-HRESULT ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+HRESULT ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, XMMATRIX modelTransformationMatrix)
 {
     HRESULT hr;
 
     // Transpose the matrices to prepare them for the shader (Dx 11 requirement)
-    worldMatrix      = XMMatrixTranspose(worldMatrix);
-    viewMatrix       = XMMatrixTranspose(viewMatrix);
-    projectionMatrix = XMMatrixTranspose(projectionMatrix);
+    worldMatrix               = XMMatrixTranspose(worldMatrix);
+    viewMatrix                = XMMatrixTranspose(viewMatrix);
+    projectionMatrix          = XMMatrixTranspose(projectionMatrix);
+    modelTransformationMatrix = XMMatrixTranspose(modelTransformationMatrix);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     // Lock the constant bufferso that it can be written to
@@ -144,9 +145,10 @@ HRESULT ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* pDeviceContex
     MatrixBufferType* pDataPtr = (MatrixBufferType*)mappedResource.pData;
 
     // Copy the matrices into the constant buffer
-    pDataPtr->world      = worldMatrix;
-    pDataPtr->view       = viewMatrix;
-    pDataPtr->projection = projectionMatrix;
+    pDataPtr->world               = worldMatrix;
+    pDataPtr->view                = viewMatrix;
+    pDataPtr->projection          = projectionMatrix;
+    pDataPtr->modelTransformation = modelTransformationMatrix;
 
     // Unlock the constant buffer
     pDeviceContext->Unmap(m_pMatrixBuffer, 0);

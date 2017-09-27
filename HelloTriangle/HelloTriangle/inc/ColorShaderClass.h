@@ -18,6 +18,7 @@ struct MatrixBufferType
     XMMATRIX world;
     XMMATRIX view;
     XMMATRIX projection;
+    XMMATRIX modelTransformation;
 };
 
 class ColorShaderClass
@@ -35,13 +36,13 @@ public:
 
     HRESULT Initialize(ID3D11Device*, HWND);
     void Shutdown();
-    HRESULT Render(ID3D11DeviceContext*, int, XMMATRIX, XMMATRIX, XMMATRIX);
+    HRESULT Render(ID3D11DeviceContext*, int, XMMATRIX, XMMATRIX, XMMATRIX, XMMATRIX);
 
 private:
     HRESULT InitializeShader(ID3D11Device*, HWND, LPCWSTR, LPCWSTR);
     void ShutdownShader();
 
-    HRESULT SetShaderParameters(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX);
+    HRESULT SetShaderParameters(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX, XMMATRIX);
     void RenderShader(ID3D11DeviceContext*, int);
 };
 
