@@ -111,6 +111,42 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="inc\CameraClass.h" />
+    <ClInclude Include="inc\ColorShaderClass.h" />
+    <ClInclude Include="inc\Dx11Class.h" />
+    <ClInclude Include="inc\GraphicsClass.h" />
+    <ClInclude Include="inc\HelloTriangle.h" />
+    <ClInclude Include="inc\InputClass.h" />
+    <ClInclude Include="inc\ModelClass.h" />
+    <ClInclude Include="inc\SystemClass.h" />
+    <ClInclude Include="inc\util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CameraClass.cpp" />
+    <ClCompile Include="src\ColorShaderClass.cpp" />
+    <ClCompile Include="src\Dx11Class.cpp" />
+    <ClCompile Include="src\GraphicsClass.cpp" />
+    <ClCompile Include="src\HelloTriangle.cpp" />
+    <ClCompile Include="src\InputClass.cpp" />
+    <ClCompile Include="src\ModelClass.cpp" />
+    <ClCompile Include="src\SystemClass.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="shaders\vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_main</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
