@@ -13,14 +13,6 @@
 using namespace DirectX;
 using namespace std;
 
-struct MatrixBufferType
-{
-    XMMATRIX world;
-    XMMATRIX view;
-    XMMATRIX projection;
-    XMMATRIX modelTransformation;
-};
-
 class ColorShaderClass
 {
 private:

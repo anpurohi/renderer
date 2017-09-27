@@ -14,6 +14,10 @@
 #include "ModelClass.h"
 #include "ColorShaderClass.h"
 
+#if USE_TEXTURE
+#include "TexShaderClass.h"
+#endif
+
 const bool FULL_SCREEN = false;
 const bool VSYNC = false;
 const float SCREEN_DEPTH = 1000.f;
@@ -37,8 +41,13 @@ private:
 	Dx11Class *       m_pDx11;
     CameraClass*      m_pCamera;
     ModelClass*       m_pModel;
-    ColorShaderClass* m_pColorShader;
 
     unsigned long     m_frameNum;
+
+#if USE_TEXTURE
+    TexShaderClass*   m_pTextureShader;
+#else
+    ColorShaderClass* m_pColorShader;
+#endif
 };
 #endif
